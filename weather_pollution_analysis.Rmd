@@ -1,3 +1,4 @@
+
 ---
 title: "R Notebook"
 output: html_notebook
@@ -9,7 +10,9 @@ library(tidyr)
 library(dplyr)
 library("reshape2")
 library("ggplot2")
-weather_pollution_data <- read_csv("C:/Users/aurazhang/Desktop/Weather analysis/New folder/weather_pollution_data.csv")
+library(RCurl)
+x <- getURL("https://raw.github.com/aurazhang/weather-pollution_analysis/weather_pollution_data.csv")
+weather_pollution_data <- read.csv(text = x)
 head(weather_pollution_data)
 ```
 Data pre-processing steps
