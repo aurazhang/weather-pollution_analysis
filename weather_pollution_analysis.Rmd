@@ -1,0 +1,68 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+library(readr)
+library(tidyr)
+library(dplyr)
+library("reshape2")
+library("ggplot2")
+weather_pollution_data <- read_csv("C:/Users/aurazhang/Desktop/Weather analysis/New folder/weather_pollution_data.csv")
+head(weather_pollution_data)
+```
+Data pre-processing steps
+
+```{r}
+summary(weather_pollution_data)
+weather_pollution_data$Date<-as.Date(weather_pollution_data$Date,"%m/%d/%Y")
+```
+
+```{r}
+temp<-aggregate(cbind(TAVG,Daily.Max.8.hour.CO.Concentration)~Date,data=weather_pollution_data,FUN="mean")
+
+p <- ggplot(temp, aes(x = Date))
+p <- p + geom_line(aes(y = TAVG, colour = "Temperature"),size=1)
+
+# adding the relative humidity data, transformed to match roughly the range of the temperature
+p <- p + geom_line(aes(y = Daily.Max.8.hour.CO.Concentration*100, colour = "Pollution"),size=1)
+
+# now adding the secondary axis, following the example in the help file ?scale_y_continuous
+# and, very important, reverting the above transformation
+p <- p + scale_y_continuous(sec.axis = sec_axis(~./100, name = "CO2 PPM"))
+
+# modifying colours and theme options
+p <- p + scale_colour_manual(values = c("#00AFBB", "#E7B800"))
+p <- p + labs(y = "Temperature",
+              x = "Date",
+              colour = "Parameter")
+p <- p + theme(legend.position = c(0.5, 0.9))
+p<- p + ggtitle("CA state - pollution vs temperature")
+p
+```
+
+```{r}
+temp<-aggregate(cbind(TAVG,Daily.Max.8.hour.CO.Concentration)~Date,data=weather_pollution_data[weather_pollution_data$CBSA_NAME=="Sacramento--Roseville--Arden-Arcade, CA",],FUN="mean")
+
+
+p <- ggplot(temp, aes(x = Date))
+p <- p + geom_line(aes(y = TAVG, colour = "Temperature"),size=1)
+
+# adding the relative humidity data, transformed to match roughly the range of the temperature
+p <- p + geom_line(aes(y = Daily.Max.8.hour.CO.Concentration*100, colour = "Pollution"),size=1)
+
+# now adding the secondary axis, following the example in the help file ?scale_y_continuous
+# and, very important, reverting the above transformation
+p <- p + scale_y_continuous(sec.axis = sec_axis(~./100, name = "CO2 PPM"))
+
+# modifying colours and theme options
+p <- p + scale_colour_manual(values = c("#00AFBB", "#E7B800"))
+p <- p + labs(y = "Temperature",
+              x = "Date",
+              colour = "Parameter")
+p <- p + theme(legend.position = c(0.5, 0.9))
+p<- p + ggtitle("Sacramento, CA - pollution vs temperature")
+
+```
+
